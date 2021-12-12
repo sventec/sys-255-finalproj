@@ -1,8 +1,8 @@
 ---
-- name: Run the Debian tasks if host is Debian
-  become: true
-  import_tasks: debian.yml
-  when: ansible_distribution == "Debian"
+# - name: Run the Debian tasks if host is Debian
+#   become: true
+#   import_tasks: debian.yml
+#   when: ansible_distribution == "Debian"
 
 - name: Run the CentOS tasks if host is CentOS
   become: true
