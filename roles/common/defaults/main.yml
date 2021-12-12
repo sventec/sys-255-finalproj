@@ -1,0 +1,50 @@
+---
+# Playbook execution configuration -------------------------------------------
+sshd_config_location: "/etc/ssh/sshd_config"
+
+jail_config_location: "/etc/fail2ban/jail.d/jail.local"
+sshd_jail_config_loaction: "/etc/fail2ban/jail.d/sshd.local"
+
+# sshd confiuration ----------------------------------------------------------
+# sshd allow root login
+sshd_permit_root_login: "no"
+
+# Port for sshd to listen on
+sshd_port: "22"
+
+# sshd allow empty passwords
+sshd_permit_empty_passwords: "no"
+
+# sshd syslog facility
+sshd_syslog_facility: "AUTHPRIV"
+
+# sshd permit publickey authentication
+sshd_pubkey_authentication: "yes"
+
+# sshd which authorized keys file to use
+sshd_authorized_keys_file: ".ssh/authorized_keys"
+
+# sshd how many auth attempts to allow
+sshd_max_auth_tries: "3"
+
+# sshd permit password authentication
+sshd_password_authentication: "yes"
+
+# sshd permit challenge response authentication
+sshd_challenge_response_authentication: "yes"
+
+# sshd use X11 forwarding
+sshd_x11_forwarding: "no"
+
+# fail2ban configuration -----------------------------------------------------
+# How long to ban an IP, in seconds
+fail2ban_bantime: "3600"
+
+# How many attempts to allow before banning an IP
+fail2ban_maxretry: "4"
+
+# Time period in which to count retries, in seconds
+fail2ban_findtime: "600"
+
+# Path to the sshd logs
+fail2ban_sshd_logpath: "/var/log/secure"

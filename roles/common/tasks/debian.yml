@@ -1,0 +1,4 @@
+- name: Ensure required programs are installed (Debian)
+  apt:
+    name: ["pam_oath", "openssh-server", "fail2ban"]
+    state: present

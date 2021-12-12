@@ -1,0 +1,5 @@
+---
+- name: Configure SSH
+  hosts: all
+  roles:
+    - common

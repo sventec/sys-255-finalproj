@@ -1,0 +1,16 @@
+[DEFAULT]
+
+# IPs to exclude from fail2ban action, space separated
+ignoreip = 127.0.0.1
+
+# The amount of time in which to count retries
+findtime  = {{ fail2ban_findtime }}
+
+# Number of seconds to ban host
+bantime  = {{ fail2ban_bantime }}
+
+# How many auth attempts before a ban
+maxretry = {{ fail2ban_maxretry }}
+
+# Override /etc/fail2ban/jail.d/00-firewalld.conf
+banaction = iptables-multiport

@@ -1,0 +1,69 @@
+- name: Ensure required programs are installed (CentOS)
+  yum:
+    name:
+      [
+        "epel-release",
+        "pam_oath",
+        "openssh-server",
+        "fail2ban",
+        "fail2ban-systemd",
+        "qrencode",
+        "coreutils",
+      ]
+    state: present
+
+- name: Initialize the sshd config file
+  template:
+    src: "sshd.conf.j2"
+    dest: "{{ sshd_config_location }}"
+    mode: "0600"
+    owner: "root"
+    group: "root"
+  notify:
+    - restart sshd
+
+- name: Verify sshd is running
+  service:
+    name: sshd
+    state: started
+    enabled: yes
+
+- name: Initialize the fail2ban default config file
+  template:
+    src: "jail.local.j2"
+    dest: "{{ jail_config_location }}"
+    mode: "0600"
+    owner: "root"
+    group: "root"
+
+- name: Initialize the fail2ban sshd config file
+  template:
+    src: "sshd-jail.local.j2"
+    dest: "{{ sshd_jail_config_loaction }}"
+    mode: "0600"
+    owner: "root"
+    group: "root"
+
+- name: Start fail2ban systemd service (CentOS)
+  systemd:
+    name: fail2ban
+    enabled: yes
+    state: started
+
+- name: Generate OATH secret for current user (CentOS)
+  shell: echo "HOTP/T30/6 {{ ansible_user_id }} - $(openssl rand -hex 10)" > /etc/users.oath ; chmod 600 /etc/users.oath ; chown root /etc/users.oath
+
+- name: Display OATH QR Code (CentOS)
+  shell: qrencode -t ansiutf8 "otpauth://totp/{{ ansible_user_id }}@{{ ansible_hostname }}?secret=$(awk -F '-' '{ printf $2 }' /etc/users.oath | xxd -r -p | base32)"
+  register: qr_code
+
+- debug: msg="{{ qr_code.stdout_lines }}"
+
+- name: Append pam_oath requirement to SSH PAM config (CentOS)
+  lineinfile:
+    path: /etc/pam.d/sshd
+    insertbefore: BOF
+    line: "auth	  sufficient pam_oath.so usersfile=/etc/users.oath window=30 digits=6"
+    state: present
+  notify:
+    - restart sshd
